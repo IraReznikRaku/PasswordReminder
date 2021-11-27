@@ -3,8 +3,10 @@ package util;
 import data.Record;
 import main.Main;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -101,16 +103,47 @@ public class Util {
         return str.toString();
     }
 
+//    public static void chooseRecord(String address) {
+//        List<Record> arrStr = new ArrayList<>();
+//        for(int i = 0; i < records.size(); i++) {
+//            if(records.get(i).getAddress().contains(address)) {
+//                arrStr.add(records.get(i));
+//            }
+//        }
+//        if(arrStr.size() != 0) {
+//            System.out.println("Choosing records:");
+//            for(Record rec : arrStr) {
+//                System.out.println(rec);
+//            }
+//        } else {
+//            System.out.println("Records no chosen");
+//        }
+//    }
+
     public static void chooseRecord(String address) {
-        List<Record> arrStr = new ArrayList<>();
-        for(int i = 0; i < records.size(); i++) {
-            if(records.get(i).getAddress().contains(address)) {
-                arrStr.add(records.get(i));
+        List<String> arrStr = new ArrayList<>();
+        Properties property = new Properties();
+        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+            property.load(fis);
+            int i = 0;
+            while (property.containsKey("Record"+i)) {
+                i++;
             }
+            for (int j = 0; j < i; j++) {
+                if (property.getProperty("Record" + j).
+                        substring(property.getProperty("Record" + j).indexOf("Address is") +
+                                        "Address is".length(),
+                                property.getProperty("Record" + j).indexOf("login")).
+                        contains(address)) {
+                    arrStr.add(property.getProperty("Record" + j));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         if(arrStr.size() != 0) {
             System.out.println("Choosing records:");
-            for(Record rec : arrStr) {
+            for(String rec : arrStr) {
                 System.out.println(rec);
             }
         } else {
@@ -120,14 +153,41 @@ public class Util {
 
     public static void saveToTextFile() {
         Properties property = new Properties();
-        Map<String, String> mapRecords = new LinkedHashMap<>();
-        try(FileOutputStream fos = new FileOutputStream("RecordsProperties.txt")) {
-            for(int i = 0; i < records.size(); i++) {
-                mapRecords.put("Record"+ i, records.get(i).toString());
+        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+            property.load(fis);
+            int i = 0;
+            while (property.containsKey("Record"+i)) {
+                i++;
             }
-            for (Integer i = 0; i < mapRecords.size(); i++) {
-                property.setProperty("Record"+i,
-                       mapRecords.get("Record"+i));
+                property.setProperty("Record"+i, records.get(records.size()-1).toString());
+                property.store(new FileOutputStream("RecordsProperties.txt"), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveToTextFile2() {
+        Map<String, String> mapRecords = new LinkedHashMap<>();
+        for(int i = 0; i < records.size(); i++) {
+            mapRecords.put("Record"+i, records.get(i).toString());
+        }
+        try(FileOutputStream fos = new FileOutputStream("RecordsProperties.txt")) {
+            for (String key : mapRecords.keySet()) {
+                fos.write((key + " = " + mapRecords.get(key) + "\n").getBytes(StandardCharsets.UTF_8)); // ???
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readAllRecordsFromTextFile() {
+        Properties prop = new Properties();
+        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+            prop.load(fis);
+            int i = 0;
+            while (prop.containsKey("Record"+i)) {
+                System.out.println(prop.getProperty("Record"+i));
+                i++;
             }
         } catch (IOException e) {
             e.printStackTrace();

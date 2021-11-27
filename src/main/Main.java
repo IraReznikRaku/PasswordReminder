@@ -17,13 +17,14 @@ public class Main {
                     Record r = Util.createRecord();
                     Util.addRecord(r);
                     Util.saveToTextFile();
+
                 case SHOW:
-                    Util.printRecords();
+                    Util.readAllRecordsFromTextFile();
                     break;
                 case CH:
                     System.out.println(CHOOSE_BY_ADDRESS);
-                    String chooseAnswer = Util.createScanner().nextLine();
-                    Util.chooseRecord(chooseAnswer);
+                    String chooseByAddress = Util.createScanner().nextLine();
+                    Util.chooseRecord(chooseByAddress);
                     break;
                 case EXIT:
                     System.exit(0);
