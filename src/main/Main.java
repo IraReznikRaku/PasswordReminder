@@ -17,7 +17,6 @@ public class Main {
                     Record r = Util.createRecord();
                     Util.addRecord(r);
                     Util.saveToTextFile();
-
                 case SHOW:
                     Util.readAllRecordsFromTextFile();
                     break;
