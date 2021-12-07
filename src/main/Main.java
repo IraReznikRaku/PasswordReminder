@@ -3,11 +3,14 @@ package main;
 import data.Record;
 import util.Util;
 
+import java.io.IOException;
+
 import static constant.Constants.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        int i = 0;
         while (true) {
             String action;
             System.out.println(CHOICE);
@@ -16,20 +19,23 @@ public class Main {
                 case ADD:
                     Record r = Util.createRecord();
                     Util.addRecord(r);
-                    Util.saveToTextFile();
+
+                        Util.saveToTextFileStreams();
+
                 case SHOW:
-                    Util.readAllRecordsFromTextFile();
+                    Util.readAllRecordsFromTextFileProperties();
                     break;
                 case CH:
                     System.out.println(CHOOSE_BY_ADDRESS);
                     String chooseByAddress = Util.createScanner().nextLine();
-                    Util.chooseRecord(chooseByAddress);
+                    Util.chooseRecordFromTextFileProperties(chooseByAddress);
                     break;
                 case EXIT:
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Incorrect choice. Repeat, please");
+                    Util.incorrectAnswer(i);
+                    i++;
             }
         }
     }

@@ -1,9 +1,10 @@
 package data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Record {
+public class Record implements Serializable {
     private String address; // Сайт
     private String login;
     private String password;

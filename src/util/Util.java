@@ -3,9 +3,7 @@ package util;
 import data.Record;
 import main.Main;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,12 +12,21 @@ import static constant.Constants.*;
 
 public class Util {
 
-//    public static Record[] records = new Record[0];
+    //    public static Record[] records = new Record[0];
     public static List<Record> records = new ArrayList<>();
     public static List<String> randomSymbolResults = new CopyOnWriteArrayList<>();
+    public static File f = new File("passRem.txt");
 
     public static Scanner createScanner() {
         return new Scanner(System.in);
+    }
+
+    public static void incorrectAnswer(int i) {
+        if (i == 3) {
+            System.out.println("Foolish user! Train your brain!");
+            System.exit(0);
+        }
+        System.out.println("Incorrect answer. Repeat, please");
     }
 
     public static Record createRecord() {
@@ -33,20 +40,16 @@ public class Util {
         while (true) {
             System.out.println(PASSWORD_QUESTION);
             String answer = createScanner().nextLine();
-            if(YES.equalsIgnoreCase(String.valueOf(answer.charAt(0)))) {  // ????? Why?
+            if (YES.equalsIgnoreCase(String.valueOf(answer.charAt(0)))) {  // ????? Why?
                 System.out.println(NUMBER_OF_PASSWORD_SYMBOLS);
                 r.setPassword(getRandomNumber(createScanner().nextInt()));
                 break;
-            } else  if (NO.equalsIgnoreCase(String.valueOf(answer.charAt(0)))) {  // ????? Why?
+            } else if (NO.equalsIgnoreCase(String.valueOf(answer.charAt(0)))) {  // ????? Why?
                 System.out.println(PASSWORD);
                 r.setPassword(createScanner().nextLine());
                 break;
             } else {
-                if(i == 3) {
-                    System.out.println("Foolish user! Train your brain!");
-                    System.exit(0);
-                }
-                System.out.println("Incorrect answer. Repeat, please");
+                incorrectAnswer(i);
                 i++;
             }
         }
@@ -103,30 +106,30 @@ public class Util {
         return str.toString();
     }
 
-//    public static void chooseRecord(String address) {
-//        List<Record> arrStr = new ArrayList<>();
-//        for(int i = 0; i < records.size(); i++) {
-//            if(records.get(i).getAddress().contains(address)) {
-//                arrStr.add(records.get(i));
-//            }
-//        }
-//        if(arrStr.size() != 0) {
-//            System.out.println("Choosing records:");
-//            for(Record rec : arrStr) {
-//                System.out.println(rec);
-//            }
-//        } else {
-//            System.out.println("Records no chosen");
-//        }
-//    }
-
     public static void chooseRecord(String address) {
+        List<Record> arrStr = new ArrayList<>();
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).getAddress().contains(address)) {
+                arrStr.add(records.get(i));
+            }
+        }
+        if (arrStr.size() != 0) {
+            System.out.println("Choosing records:");
+            for (Record rec : arrStr) {
+                System.out.println(rec);
+            }
+        } else {
+            System.out.println("Records no chosen");
+        }
+    }
+
+    public static void chooseRecordFromTextFileProperties(String address) {
         List<String> arrStr = new ArrayList<>();
         Properties property = new Properties();
-        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+        try (FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
             property.load(fis);
             int i = 0;
-            while (property.containsKey("Record"+i)) {
+            while (property.containsKey("Record" + i)) {
                 i++;
             }
             for (int j = 0; j < i; j++) {
@@ -141,9 +144,9 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(arrStr.size() != 0) {
+        if (arrStr.size() != 0) {
             System.out.println("Choosing records:");
-            for(String rec : arrStr) {
+            for (String rec : arrStr) {
                 System.out.println(rec);
             }
         } else {
@@ -151,27 +154,59 @@ public class Util {
         }
     }
 
-    public static void saveToTextFile() {
+    public static void saveToTextFileStreams() {
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+            Record r;
+            List<Record> rc = new LinkedList<>();
+            while ((r = (Record) ois.readObject()) != null) {
+                rc.add(r);
+            }
+            if (rc.size() != 0) {
+                for (Record value : rc) {
+                    oos.writeObject(value);
+                }
+            }
+            for (Record record : records) {
+                oos.writeObject(record);
+            }
+        } catch (FileNotFoundException | EOFException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveToTextFileProperties() {
         Properties property = new Properties();
-        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+        try (FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
             property.load(fis);
             int i = 0;
-            while (property.containsKey("Record"+i)) {
+            while (property.containsKey("Record" + i)) {
                 i++;
             }
-                property.setProperty("Record"+i, records.get(records.size()-1).toString());
-                property.store(new FileOutputStream("RecordsProperties.txt"), null);
+            property.setProperty("Record" + i, records.get(records.size() - 1).toString());
+            property.store(new FileOutputStream("RecordsProperties.txt"), null);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void saveToTextFile2() {
+    public static void saveToTextFile() {
         Map<String, String> mapRecords = new LinkedHashMap<>();
-        for(int i = 0; i < records.size(); i++) {
-            mapRecords.put("Record"+i, records.get(i).toString());
+        for (int i = 0; i < records.size(); i++) {
+            mapRecords.put("Record" + i, records.get(i).toString());
         }
-        try(FileOutputStream fos = new FileOutputStream("RecordsProperties.txt")) {
+        try (FileOutputStream fos = new FileOutputStream("RecordsProperties.txt")) {
             for (String key : mapRecords.keySet()) {
                 fos.write((key + " = " + mapRecords.get(key) + "\n").getBytes(StandardCharsets.UTF_8)); // ???
             }
@@ -180,17 +215,27 @@ public class Util {
         }
     }
 
-    public static void readAllRecordsFromTextFile() {
+    public static void readAllRecordsFromTextFileProperties() {
         Properties prop = new Properties();
-        try(FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
+        try (FileInputStream fis = new FileInputStream("RecordsProperties.txt")) {
             prop.load(fis);
             int i = 0;
-            while (prop.containsKey("Record"+i)) {
-                System.out.println(prop.getProperty("Record"+i));
+            while (prop.containsKey("Record" + i)) {
+                System.out.println(prop.getProperty("Record" + i));
                 i++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+//    public static void readAllRecordsFromTextFileStreams() {
+//        try {
+//            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        for (int i = 0; i < )
+//
+//    }
 }
