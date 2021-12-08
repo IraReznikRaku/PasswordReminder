@@ -10,7 +10,7 @@ public class FileSystemService {
 
     private static final String NAME_OF_FILE = "C:\\Java47\\PasswordReminder\\passRem.txt";
 
-    private void createFile() {
+    private File createFile() {
         File f = new File(NAME_OF_FILE);
         if (!f.exists()) {
             try {
@@ -19,17 +19,16 @@ public class FileSystemService {
                 e.printStackTrace();
             }
         }
+        return f;
     }
 
     private List<Record> readFromFile() {
         List<Record> lr = new LinkedList<>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(NAME_OF_FILE))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(createFile()))) {
             Record r;
-            if(ois.available() != 0) {
-                while ((r = (Record) ois.readObject()) != null) {
-                    lr.add(r);
-                }
-            } else {}
+            while ((r = (Record) ois.readObject()) != null) {
+                lr.add(r);
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -39,12 +38,10 @@ public class FileSystemService {
     }
 
     private void writeRecordsToOutputStream(Record r) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(NAME_OF_FILE))) {
-            if(readFromFile().size() != 0) {
-                List<Record> lr = readFromFile();
-                for (int i = 0; i < lr.size(); i++) {
-                    oos.writeObject(lr.get(i));
-                }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(createFile()))) {
+            List<Record> lr = readFromFile();
+            for (Record rec : lr) {
+                oos.writeObject(rec);
             }
             oos.writeObject(r);
         } catch (IOException e) {
@@ -59,16 +56,16 @@ public class FileSystemService {
 
     public void showFromFile() {
         List<Record> lir = readFromFile();
-        for (int i = 0; i < lir.size(); i++) {
-            System.out.println(lir.get(i));
+        for (Record rec : lir) {
+            System.out.println(rec);
         }
     }
 
-    public void chooseAddressFromFile(String s){
+    public void chooseAddressFromFile(String s) {
         List<Record> lir = readFromFile();
-        for (int i = 0; i < lir.size(); i++) {
-            if (lir.get(i).getAddress().contains(s)) {
-                System.out.println(lir.get(i));
+        for (Record rec : lir) {
+            if (rec.getAddress().contains(s)) {
+                System.out.println(rec);
             }
         }
     }
