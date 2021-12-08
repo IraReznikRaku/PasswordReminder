@@ -10,7 +10,7 @@ public class Record implements Serializable {
     private String password;
     private Date date;
 
-    public Record() {date = new Date(System.currentTimeMillis());}
+    public Record() {}
 
     public String getAddress() {return address;}
 
@@ -25,6 +25,8 @@ public class Record implements Serializable {
     public void setPassword(String password) {this.password = password;}
 
     public Date getData() {return date;}
+
+    public void setDate(Date date) {this.date = date;}
 
     @Override
     public boolean equals(Object o) {

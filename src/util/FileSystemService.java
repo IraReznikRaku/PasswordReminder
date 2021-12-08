@@ -29,10 +29,8 @@ public class FileSystemService {
             while ((r = (Record) ois.readObject()) != null) {
                 lr.add(r);
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("read From File");
         }
         return lr;
     }

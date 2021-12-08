@@ -31,6 +31,7 @@ public class Util {
 
     public static Record createRecord() {
         Record r = new Record();
+        r.setDate(new Date(System.currentTimeMillis()));
         System.out.println(ADDRESS);
         r.setAddress(createScanner().nextLine());
         System.out.println(LOGIN);
@@ -228,14 +229,4 @@ public class Util {
             e.printStackTrace();
         }
     }
-
-//    public static void readAllRecordsFromTextFileStreams() {
-//        try {
-//            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        for (int i = 0; i < )
-//
-//    }
 }
