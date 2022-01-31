@@ -41,6 +41,6 @@ public class Record implements Serializable {
 
     @Override
     public String toString() {
-        return "Address is: " + address + ", login is: " + login + ", password is: " + password + ", date is: " + date;
+        return "Address is: " + address + ", Login is: " + login + ", password is: " + password + ", date is: " + date;
     }
 }

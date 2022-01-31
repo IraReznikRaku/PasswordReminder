@@ -137,7 +137,7 @@ public class Util {
                 if (property.getProperty("Record" + j).
                         substring(property.getProperty("Record" + j).indexOf("Address is") +
                                         "Address is".length(),
-                                property.getProperty("Record" + j).indexOf("login")).
+                                property.getProperty("Record" + j).indexOf("Login")).
                         contains(address)) {
                     arrStr.add(property.getProperty("Record" + j));
                 }
