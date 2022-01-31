@@ -39,7 +39,7 @@ public class FileSystemService {
 //        }
 //    }
 
-    private static File createKeyFile() {
+    public static File createKeyFile() {
         File f = new File(SECRET_KEY);
         if (!f.exists()) {
             try {

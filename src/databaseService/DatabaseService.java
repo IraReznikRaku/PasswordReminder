@@ -14,7 +14,7 @@ public class DatabaseService {
     private static final String URL    = "jdbc:postgresql://localhost:5432/postgres";
     private static final String LOGIN  = "postgres";
     private static final String PASS   = "postgres";
-    private static final String CREATE = "CREATE TABLE IF NOT EXISTS passwordReminder (address VARCHAR (20) PRIMARY KEY, login VARCHAR (20), password VARCHAR (20), date VARCHAR (50))";
+    private static final String CREATE = "CREATE TABLE IF NOT EXISTS passwordReminder (address VARCHAR (20) PRIMARY KEY, login VARCHAR (20), password VARCHAR (50), date VARCHAR (50))";
     private static final String INSERT = "INSERT INTO passwordReminder VALUES (?, ?, ?, ?)";
     private static final String SELECT_FOR_CHOOSE = "SELECT * FROM passwordReminder WHERE address LIKE ?";
     private static final String SELECT_FOR_SHOW = "SELECT * FROM passwordReminder";
@@ -34,6 +34,8 @@ public class DatabaseService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        FileSystemService.createKey();
+        FileSystemService.writeKeyToFile();
     }
 
     private static Connection getConnection() throws SQLException {
@@ -45,8 +47,6 @@ public class DatabaseService {
     }
 
     public static void addRecord(Record r) {
-        FileSystemService.createKey();
-        FileSystemService.writeKeyToFile();
         try (Connection c = getConnection(); PreparedStatement ps = prepareStatement(c, INSERT)){
             ps.setString(1, r.getAddress());
             ps.setString(2, r.getLogin());
@@ -70,12 +70,22 @@ public class DatabaseService {
                 System.out.printf("Address: %s, login: %s, pass: %s, data: %s",
                         rs.getString(1),
                         rs.getString(2),
-                        rs.getString(3),
+                        FileSystemService.decryptionPass(rs.getString(3)),
                         rs.getString(4));
                 System.out.println();
             }
             rs.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
             e.printStackTrace();
         }
     }
@@ -91,6 +101,7 @@ public class DatabaseService {
                         rs.getString(4));
                 System.out.println();
             }
+            String s = rs.getString(3);
             rs.close();
         } catch (SQLException e) {
             e.printStackTrace();

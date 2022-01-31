@@ -2,6 +2,7 @@ package main;
 
 import data.Record;
 import databaseService.DatabaseService;
+import util.FileSystemService;
 import util.Util;
 
 import static constant.Constants.*;
@@ -41,6 +42,7 @@ public class Main {
 //                    fss.chooseFromStringFile(chooseByAddress);
                     break;
                 case EXIT:
+//                    FileSystemService.createKeyFile().delete();
                     System.exit(0);
                     break;
                 default:
